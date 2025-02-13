@@ -12,9 +12,8 @@ By Ethryan and [plenty of other contributors](https://github.com/Ethryan/GTNH-Fa
 
 ### Information:
 
-- If you cloned this repository instead of downloading the zip from the releases page **and you do not want to help developing the pack**, you can safely delete all the files/directories except for:
+- If you cloned this repository instead of downloading the zip from the releases page **and you do not want to help developing the pack**, you can safely delete all the files/directories **except** for:
 	- assets/
-	- Reika/
 	- pack.mcmeta
 	- pack.png
 	- README.md

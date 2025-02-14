@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+html {
+	background-color: black;
+	color: gray;
+	font-family: "Roboto Mono", serif !important;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+main {
+	overflow-x: hidden;
+}
+
+.container {
+	width: 100%;
+	margin: 0 auto;
+}
+
+.assets-buttons {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 5px;
+}
+
+.asset-button {
+	border: 1px solid transparent;
+	border-radius: 5px;
+	padding: 5px;
+	width: 180px;
+	background-color: #ffffff12;
+	color: gray;
+	cursor: pointer;
+}
+
+.asset-button-selected,
+.asset-button:hover {
+	background-color: #ffffff24;
+	border-color: white;
+}
+
+.assets-textures {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 10px;
+}
+
+.assets-texture:hover {
+	background-color: #ffffff12;
+}
+
+.assets-texture {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid #fff1;
+	gap: 10px;
+}
+
+.assets-texture-name {
+	margin-bottom: 10px;
+	text-align: center;
+}
+
+.assets-texture-images {
+	display: flex;
+	flex-direction: row;
+	height: 175px;
+	gap: 10px;
+}

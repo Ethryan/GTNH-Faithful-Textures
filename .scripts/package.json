@@ -4,7 +4,8 @@
     "extract": "node runs/extract.ts",
     "cleanup": "node runs/clean.ts",
     "update": "node runs/update.ts",
-    "progress": "node runs/progress.ts"
+    "progress": "node runs/progress.ts",
+    "recolor": "node runs/recolor.ts"
   },
   "engines": {
     "node": ">=23.7.0"

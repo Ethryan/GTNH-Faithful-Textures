@@ -5,14 +5,17 @@
     "cleanup": "node runs/clean.ts",
     "update": "node runs/update.ts",
     "progress": "node runs/progress.ts",
-    "recolor": "node runs/recolor.ts"
+    "recolor": "node runs/recolor.ts",
+    "zip": "node runs/zip.ts"
   },
   "engines": {
     "node": ">=23.7.0"
   },
   "devDependencies": {
+    "@types/archiver": "^6.0.3",
     "@types/node": "^22.13.1",
     "@types/unzipper": "^0.10.10",
+    "archiver": "^7.0.1",
     "consola": "^3.4.0",
     "sharp": "^0.33.5",
     "typescript": "^5.8.0-beta",

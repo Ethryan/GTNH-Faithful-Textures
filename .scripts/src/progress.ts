@@ -41,6 +41,8 @@ export function packProgress(assetsNames?: string[]): number {
 	const longestAssetName = Array.from(assetsDone.keys()).reduce((acc, asset) => asset.length > acc.length ? asset : acc, '');
 	const assets = Array.from(assetsDone.keys()).sort();
 
+	let outputTxt = '';
+
 	for (const asset of assets) {
 		const { done, todo } = assetsDone.get(asset)!;
 		const percent = Math.round((done / todo) * 100);
@@ -48,6 +50,10 @@ export function packProgress(assetsNames?: string[]): number {
 
 		if (percent === 100) consola.success(str);
 		else consola.info(str);
+
+		if (!assetsNames) {
+			outputTxt += `${str}\n`;
+		}
 
 		if (assetsNames && missingAssets.has(asset)) {
 			consola.warn(`Missing files:`);
@@ -57,7 +63,9 @@ export function packProgress(assetsNames?: string[]): number {
 		if (assetsNames) consola.info(`${str} ^^^^`);
 	}
 
-	consola.info(`${'TOTAL'.padEnd(longestAssetName.length + 10)}: ${percentage.toString().padStart(5)}% (${done.toString()}/${todo.toString()})`);
+	const totalStr = `${'TOTAL'.padEnd(longestAssetName.length + 10)}: ${percentage.toString().padStart(5)}% (${done}/${todo})`;
+	consola.info(totalStr);
+	if (outputTxt !== '') fs.writeFileSync('progress.txt', outputTxt + totalStr);
 	
 	return percentage;
 }

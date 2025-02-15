@@ -21,15 +21,16 @@ export async function recolor(source16x: string, targets: string[]): Promise<voi
 	}
 
 	const palette16 = getPalette(data16, info16);
-	const { data: data32, info: info32 } = await sharp(source32x).raw().ensureAlpha().toBuffer({ resolveWithObject: true });
-
-	// check if the target image has the same dimensions as the source image
-	if (info32.width * info32.height < (info16.width * 2) * (info16.height * 2)) {
-		consola.error('The default texture is the same size as the x32 texture.');
-		return;
-	}
 
 	for (let target of targets) {
+		const { data: data32, info: info32 } = await sharp(source32x).raw().ensureAlpha().toBuffer({ resolveWithObject: true });
+
+		// check if the target image has the same dimensions as the source image
+		if (info32.width * info32.height < (info16.width * 2) * (info16.height * 2)) {
+			consola.error('The default texture is the same size as the x32 texture.');
+			continue;
+		}
+
 		const { data: dataTarget, info: infoTarget } = await sharp(target).raw().ensureAlpha().toBuffer({ resolveWithObject: true });
 		const paletteTarget = getPalette(dataTarget, infoTarget);
 
@@ -62,6 +63,13 @@ export async function recolor(source16x: string, targets: string[]): Promise<voi
 		const targetPath = target.replace('.default', 'assets');
 		if (!fs.existsSync(targetPath)) {
 			fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+		}
+
+		// copy mcmeta file if it exists
+		const sourceMCMETA = source32x + '.mcmeta';
+		const targetMCMETA = targetPath + '.mcmeta';
+		if (fs.existsSync(sourceMCMETA)) {
+			fs.copyFileSync(sourceMCMETA, targetMCMETA);
 		}
 
 		await sharp(data32, { raw: { width: info32.width, height: info32.height, channels: info32.channels } }).toFile(targetPath);

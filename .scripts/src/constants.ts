@@ -17,5 +17,4 @@ export type Cache = {
 		total: number;
 		skipped: number;
 	};
-	modified: timestamp;
 }

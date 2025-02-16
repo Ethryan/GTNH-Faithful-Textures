@@ -99,7 +99,6 @@ export async function extractDefaultTextures() {
 			total: paths.size + skipped.size,
 			skipped: skipped.size,
 		},
-		modified: Date.now(),
 	};
 
 	fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2));

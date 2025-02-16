@@ -56,7 +56,7 @@ export async function extractDefaultTextures() {
 		const directory = await OpenJar.file(p);
 		const files = directory.files.filter((file) => file.path.includes('assets') && file.path.includes('textures'));
 
-		consola.info('Looking for textures in', mod);
+		consola.info('Looking for textures in', mod.split(path.sep).pop());
 
 		// no textures found in this mod
 		if (files.length === 0) continue;
@@ -71,7 +71,6 @@ export async function extractDefaultTextures() {
 			try {
 				const transparentTexture = file.path.endsWith('.png') ? await isTransparent(buffer) : false;
 				if (transparentTexture) {
-					consola.info(`Skipping ${file.path} because it's fully transparent.`);
 					skipped.add(file.path);
 					continue;
 				}
@@ -84,9 +83,9 @@ export async function extractDefaultTextures() {
 				fs.mkdirSync(path.dirname(fp), { recursive: true });
 			}
 
-			consola.info(`Extracting ${file.path}...`);
 			fs.writeFileSync(fp, buffer);
-			paths.add(file.path);
+			// only keep textures and .mcmeta files (avoid .pdn files)
+			if (file.path.endsWith('.png') || file.path.endsWith('.mcmeta')) paths.add(file.path);
 		}
 	}
 

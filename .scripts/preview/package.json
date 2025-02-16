@@ -1,0 +1,23 @@
+{
+  "type": "module",
+  "engines": {
+    "node": ">=23.7.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "15.1.7",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-minecraft": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.1",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5.8.0-beta"
+  }
+}

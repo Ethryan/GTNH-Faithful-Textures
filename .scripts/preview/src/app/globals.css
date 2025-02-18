@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
 
+body,
 html {
 	background-color: black;
 	color: gray;
@@ -8,66 +9,39 @@ html {
   font-style: normal;
 }
 
-main {
-	overflow-x: hidden;
+.input {
+	border: 1px solid #333333;
+	padding-left: var(--mantine-spacing-xs);
 }
 
-.container {
-	width: 100%;
-	margin: 0 auto;
+.bordered {
+	border: 1px solid #333333;
 }
 
-.assets-buttons {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	justify-content: center;
-	gap: 5px;
+.dropdown {
+	border: 1px solid #333333;
+	padding-left: 5px;
+	background-color: black;
 }
 
-.asset-button {
+.label {
+	display: inline-block;
+	font-weight: 500;
+	word-break: break-word;
+	cursor: default;
+	-webkit-tap-highlight-color: transparent;
+	font-size: var(--input-label-size, var(--mantine-font-size-sm));
+	text-overflow: ellipsis;
+}
+
+.textureGroup {
 	border: 1px solid transparent;
-	border-radius: 5px;
-	padding: 5px;
-	width: 180px;
-	background-color: #ffffff12;
-	color: gray;
+	background-color: #11111160;
+	/* box-shadow: 5px 5px 10px #333333; */
+}
+
+.textureGroup:hover {
+	border: 1px solid #666666;
+	background-color: #333333;
 	cursor: pointer;
-}
-
-.asset-button-selected,
-.asset-button:hover {
-	background-color: #ffffff24;
-	border-color: white;
-}
-
-.assets-textures {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	justify-content: center;
-	gap: 10px;
-}
-
-.assets-texture:hover {
-	background-color: #ffffff12;
-}
-
-.assets-texture {
-	display: flex;
-	flex-direction: column;
-	border: 1px solid #fff1;
-	gap: 10px;
-}
-
-.assets-texture-name {
-	margin-bottom: 10px;
-	text-align: center;
-}
-
-.assets-texture-images {
-	display: flex;
-	flex-direction: row;
-	height: 175px;
-	gap: 10px;
 }

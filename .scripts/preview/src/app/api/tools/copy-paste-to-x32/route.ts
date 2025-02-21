@@ -14,5 +14,9 @@ export async function POST(req: Request) {
 	// copy x16 to x32
 	copyFileSync(x16fullPath, x32fullPath);
 
+	if (existsSync(x16fullPath + '.mcmeta')) {
+		copyFileSync(x16fullPath + '.mcmeta', x32fullPath + '.mcmeta');
+	}
+
 	return new Response('ok');
 }

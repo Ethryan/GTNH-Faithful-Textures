@@ -6,7 +6,8 @@
     "update": "node runs/update.ts",
     "progress": "node runs/progress.ts",
     "recolor": "node runs/recolor.ts",
-    "zip": "node runs/zip.ts"
+    "zip": "node runs/zip.ts",
+    "switch-color": "node runs/switch-color.ts"
   },
   "engines": {
     "node": ">=23.7.0"

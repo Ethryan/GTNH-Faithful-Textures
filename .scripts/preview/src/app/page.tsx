@@ -1,10 +1,10 @@
 'use client';
 
-import { Button, ButtonGroup, Group, Menu, MenuItem, MultiSelect, Pagination, Stack, TextInput } from '@mantine/core';
+import { Group, MultiSelect, Pagination, Stack, TextInput } from '@mantine/core';
 import { type Cache } from '../../../src/constants';
-import { useEffect, useMemo, useRef, useState } from "react";
-import { MCMeta, Texture } from 'react-minecraft';
+import { useEffect, useMemo, useState } from "react";
 import { useLocalStorage } from '@mantine/hooks';
+import { MenuHolder } from './menu';
 
 function chunk<T>(arr: T[], size: number): T[][] {
   if (!arr.length) return [];
@@ -57,48 +57,7 @@ export default function Home() {
     setActivePage(1);
   }, [search]);
 
-  const data = chunk(displayedTextures, 32);
-
-  const MenuHolder = (filePath: string, resolution: 'x16' | 'x32') => {
-    return (
-      <Menu
-        position="right-start"
-      >
-        <Menu.Target>
-          <Texture
-            src={`/api/texture?path=${filePath}&resolution=${resolution}`}
-            size="120px"
-          />
-        </Menu.Target>
-        <Menu.Dropdown>
-          <Menu.Label>Tools</Menu.Label>
-          <Menu.Item 
-            onClick={() => void fetch('/api/tools/open-file', {
-              method: 'POST',
-              body: JSON.stringify({ filePath, resolution }),
-            })}
-          >
-            Reveal in File Explorer
-          </Menu.Item>
-          <MenuItem
-            onClick={() => navigator.clipboard.writeText(filePath)}
-          >
-            Copy file path
-          </MenuItem>
-          {resolution === 'x16' && (
-            <MenuItem
-              onClick={() => void fetch('/api/tools/copy-paste-to-x32', { 
-                method: 'POST', 
-                body: JSON.stringify({ filePath }),
-              })}
-            >
-              Copy to x32
-            </MenuItem>
-          )}
-        </Menu.Dropdown>
-      </Menu>
-    )
-  };
+  const data = chunk(displayedTextures, 36);
 
   return (
     <Stack p="md">
@@ -137,8 +96,8 @@ export default function Home() {
             mah="191.69px"
           >
             <Group mx="auto">
-              {MenuHolder(filePath, "x32")}
-              {MenuHolder(filePath, "x16")}
+              <MenuHolder filePath={filePath} resolution="x16" />
+              <MenuHolder filePath={filePath} resolution="x32" />
             </Group>
             <label className="label mantine-InputWrapper-label mantine-MultiSelect-label">
               {filePath.split('/').pop()?.replace('.png', '')}

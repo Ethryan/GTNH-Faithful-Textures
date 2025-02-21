@@ -53,7 +53,7 @@ export async function GET(req: Request) {
       {
         headers: {
           "Content-Type": "application/json",
-          "Cache-Control": "public, max-age=31536000", // Add caching
+          "Cache-Control": `public, max-age=${resolution === 'x16' ? 604800 : 60}`, // 1 minute if x32, 1 week if x16
         },
       }
     );

@@ -30,7 +30,7 @@ export function MenuHolder({ filePath, resolution }: props) {
 					{mcmeta && (
 						<Texture
 							src={texture}
-							animation={{ mcmeta, tiled: filePath.toLowerCase().includes('flow') }}
+							animation={{ mcmeta, tiled: filePath.toLowerCase().includes('flow') && !filePath.toLowerCase().endsWith('.flowing.png') }}
 							size="120px"
 						/>
 					)}

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version number, do not include the "v" prefix'
+        description: 'Version number that follows SemVer (x.y.z), do not include the "v" prefix (e.g., 1.0.0)'
         required: true
   pull_request:
     types:
@@ -21,6 +21,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Check branch name follows SemVer
+        if: github.event_name == 'pull_request'
+        run: |
+          if [[ ! "${{ github.event.pull_request.head.ref }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Branch name does not follow SemVer format (x.y.z)."
+            exit 1
+          fi
+
+      - name: Check input version follows SemVer
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [[ ! "${{ github.event.inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Version does not follow SemVer format (x.y.z)."
+            exit 1
+          fi
 
       - name: Install NodeJS
         uses: actions/setup-node@v4

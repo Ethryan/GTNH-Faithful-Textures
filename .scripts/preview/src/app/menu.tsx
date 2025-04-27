@@ -1,13 +1,16 @@
 import { Menu, MenuItem } from "@mantine/core";
+import { useOs } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { Texture, TextureMCMeta } from "react-minecraft";
+import { ModalData } from "./page";
 
 interface props {
 	filePath: string;
 	resolution: 'x16' | 'x32';
+	openModal: (data: ModalData) => void;
 }
 
-export function MenuHolder({ filePath, resolution }: props) {
+export function MenuHolder({ filePath, resolution, openModal }: props) {
 	const [texture, setTexture] = useState<string>('data:image/png;base64,');
 	const [mcmeta, setMcmeta] = useState<Required<Pick<TextureMCMeta, 'animation'>> | null>(null);
 
@@ -20,7 +23,9 @@ export function MenuHolder({ filePath, resolution }: props) {
 			})
 			.catch(() => null);
 	}, [filePath, resolution]);
-	
+
+	const os = useOs();
+
 	return (
 		<Menu
 			position="right-start"
@@ -31,20 +36,36 @@ export function MenuHolder({ filePath, resolution }: props) {
 						<Texture
 							src={texture}
 							animation={{ mcmeta, tiled: filePath.toLowerCase().includes('flow') && !filePath.toLowerCase().endsWith('.flowing.png') }}
-							size="120px"
+							size={100}
 						/>
 					)}
 					{!mcmeta && (
 						<Texture
 							src={texture}
-							size="120px"
+							size={100}
 						/>
 					)}
 				</div>
 			</Menu.Target>
 			<Menu.Dropdown>
-				<Menu.Label>Tools</Menu.Label>
-				<Menu.Item 
+				<Menu.Label>Preview</Menu.Label>
+				<MenuItem
+					onClick={() => {
+						openModal({
+							src: texture,
+							animation: mcmeta 
+								? {
+										mcmeta,
+										tiled: filePath.toLowerCase().includes('flow') && !filePath.toLowerCase().endsWith('.flowing.png'),
+									}
+								: undefined,
+						})
+					}}
+				>
+					Fullscreen Preview
+				</MenuItem>
+				<Menu.Item
+					disabled={os !== 'windows'}
 					onClick={() => void fetch('/api/tools/open-file', {
 						method: 'POST',
 						body: JSON.stringify({ filePath, resolution }),
@@ -52,10 +73,11 @@ export function MenuHolder({ filePath, resolution }: props) {
 				>
 					Reveal in File Explorer
 				</Menu.Item>
+				<Menu.Label>Tools</Menu.Label>
 				<MenuItem
 					onClick={() => navigator.clipboard.writeText(filePath)}
 				>
-					Copy file path
+					Copy assets path
 				</MenuItem>
 				{resolution === 'x16' && (
 					<MenuItem

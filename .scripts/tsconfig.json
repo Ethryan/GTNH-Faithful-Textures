@@ -9,6 +9,7 @@
     "moduleResolution": "nodenext",
     "erasableSyntaxOnly": true,
     "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
     "noEmit": true,
   }
 }

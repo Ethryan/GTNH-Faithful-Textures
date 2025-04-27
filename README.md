@@ -18,4 +18,7 @@ By Ethryan and [plenty of other contributors](https://github.com/Ethryan/GTNH-Fa
 	- pack.png
 	- README.md
 
-- If you want to help developing the pack, make sure to clone the repository in your `.minecraft/resourcepacks` directory, scripts will assume that the repository is cloned there.
+- If you want to help developing the pack and use the scripts in the `.scripts` directory:
+	- Make a copy of the `config.example.json` as `config.json` in the same directory and edit it to your configuration. 
+	- On a normal configuration, only the `$root` variable needs to be changed to where you cloned the repository.
+	- You also need to update the `client_jar` variable to the path of your Minecraft client jar.

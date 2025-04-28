@@ -1,13 +1,16 @@
 import path from 'node:path';
+import config from '../config.json' with { type: 'json' };
 
-export const MODS_DIRECTORY = path.resolve('..', '..', '..', 'mods');
-export const DEFAULT_TEXTURES_DIRECTORY = path.resolve('..', '.default');
-export const FAITHFUL_TEXTURES_DIRECTORY = path.resolve('..', 'assets');
-export const ROOT_DIRECTORY = path.resolve('..');
-export const RESOURCE_PACK_DIRECTORY = path.resolve('..');
+const root = config.directories.$root;
+
+export const MODS_DIRECTORY = config.directories.mods.replace('$root', root);
+export const DEFAULT_TEXTURES_DIRECTORY = config.directories.default.replace('$root', root);
+export const FAITHFUL_TEXTURES_DIRECTORY = config.directories.faithful.replace('$root', root);
+export const ROOT_DIRECTORY = config.directories.resourcepack.replace('$root', root);
+export const RESOURCE_PACK_DIRECTORY = ROOT_DIRECTORY;
 export const CACHE_FILE = path.resolve('cache.json');
-export const PACK_MCMETA = path.resolve('..', 'pack.mcmeta');
-export const CLIENT_JAR = path.resolve('..', '..', '..', '..', '..', '..', 'libraries', 'com', 'mojang', 'minecraft', '1.7.10', 'minecraft-1.7.10-client.jar');
+export const PACK_MCMETA = path.join(RESOURCE_PACK_DIRECTORY, 'pack.mcmeta');
+export const CLIENT_JAR = config.directories.client_jar.replace('$root', root);
 
 export type timestamp = number;
 export type Cache = {

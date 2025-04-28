@@ -1,10 +1,13 @@
 'use client';
 
-import { Group, MultiSelect, Pagination, Stack, TextInput } from '@mantine/core';
-import { type Cache } from '../../../src/constants';
-import { useEffect, useMemo, useState } from "react";
-import { useLocalStorage } from '@mantine/hooks';
+import { Card, Group, Modal, MultiSelect, Pagination, Stack, Text, TextInput, useComputedColorScheme, useMantineColorScheme } from '@mantine/core';
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useDisclosure, useLocalStorage, useViewportSize } from '@mantine/hooks';
 import { MenuHolder } from './menu';
+
+import type { Cache } from '../../../src/constants';
+import { BREAKPOINT_MOBILE_LARGE, BREAKPOINT_TABLET, BREAKPOINT_DESKTOP_MEDIUM, BREAKPOINT_DESKTOP_LARGE } from './utils/constants';
+import { MCMeta, Texture } from 'react-minecraft';
 
 function chunk<T>(arr: T[], size: number): T[][] {
   if (!arr.length) return [];
@@ -14,101 +17,128 @@ function chunk<T>(arr: T[], size: number): T[][] {
   return [head, ...chunk(tail, size)];
 }
 
+export interface ModalData { 
+  src: string, 
+  animation?: { 
+    mcmeta: {
+      animation: MCMeta.Animation
+    }
+    tiled: boolean 
+  } 
+}
+
 export default function Home() {
+  const { setColorScheme } = useMantineColorScheme();
+  const [opened, { open, close }] = useDisclosure(false);
+  const [modalData, setModalData] = useState<ModalData | null>(null);
   const [cache, setCache] = useState<Cache | null>();
 
-  const [search, setSearch] = useState('');
-  const [activePage, setActivePage] = useState(1);
-  const [displayedTextures, setDisplayedTextures] = useState<string[]>([]);
+  useEffect(() => {
+    setColorScheme('dark');
+    fetch('/api/cache')
+      .then((res) => res.json())
+      .then(setCache)
+  }, []);
 
-  const [assets, setAssets] = useLocalStorage<string[]>({
+  const [selectedAssets, setSelectedAssets] = useLocalStorage<string[]>({
     key: 'assets',
     defaultValue: ['minecraft'],
   });
 
   const allAssets = useMemo(() => {
-    if (!cache) return new Set<string>();
+    if (!cache) return [];
 
     const set = new Set<string>();
     cache.paths
       .map((filePath) => filePath.split('assets')[1].slice(1).split('/')[0])
       .forEach((assetFolder) => set.add(assetFolder));
 
-    return set;
+    return Array.from(set).sort();
   }, [cache]);
 
-  useEffect(() => {
-    fetch('/api/cache')
-      .then((res) => res.json())
-      .then((data) => setCache(data));
-  }, [])
+  const [displayedTextures, setDisplayedTextures] = useState<string[]>([]);
+  const [activePage, setActivePage] = useState(1);
+  const [search, setSearch] = useLocalStorage<string>({
+    key: 'search',
+    defaultValue: '',
+  });
 
   useEffect(() => {
-    const textures = cache?.paths
-      .filter((e) => e.endsWith('.png'))
-      .filter((e) => assets.length === 0 ? true : assets.some((asset) => e.startsWith(`assets/${asset}`) && e.endsWith('.png')))
+    if (!cache) return;
+
+    const textures = cache.paths
+      .filter((e) => selectedAssets.length === 0 ? true : selectedAssets.some((asset) => e.startsWith(`assets/${asset}`)))
       .filter((e) => search === '' ? true : e.toLowerCase().includes(search.toLowerCase()))
-      .sort();
+      .filter((e) => e.endsWith('.png'))
 
-    setDisplayedTextures(textures || []);
-  }, [allAssets, assets, search]);
+    setDisplayedTextures(textures.sort());
+  }, [allAssets, selectedAssets, search]);
 
-  useEffect(() => {
-    setActivePage(1);
-  }, [search]);
+  const splittedTextures = useMemo(() => chunk(displayedTextures, 36), [displayedTextures]);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const data = chunk(displayedTextures, 36);
+  const { width } = useViewportSize();
+  const cardsPerRow = width <= BREAKPOINT_MOBILE_LARGE 
+    ? 1 
+    : width <= BREAKPOINT_TABLET 
+      ? 2
+      : width <= BREAKPOINT_DESKTOP_MEDIUM
+        ? 3
+        : width <= BREAKPOINT_DESKTOP_LARGE
+          ? 4
+          : 6;
+
+  const handleModalOpen = (data: ModalData) => {
+    setModalData(data);
+    open();
+  }
 
   return (
-    <Stack p="md">
-      <MultiSelect
-        classNames={{
-          input: 'input',
-          dropdown: 'dropdown',
+    <Stack m="md">
+      <Modal
+        opened={opened}
+        centered
+        size="lg"
+        onClose={() => {
+          setModalData(null);
+          close();
         }}
+      >
+        {modalData && (
+          <Stack w="100%" h="100%" justify="center" align="center" mb={40}>
+            <Texture
+              size="500px"
+              src={modalData.src}
+              animation={modalData.animation}
+            />
+          </Stack>
+        )}
+      </Modal>
+
+      <MultiSelect 
         w="100%"
-        data={Array.from(allAssets).sort()}
-        value={assets}
-        onChange={setAssets}
-        searchable
-        label="Assets"
-        variant="unstyled"
+        data={allAssets}
+        value={selectedAssets}
+        onChange={(v) => setSelectedAssets(v)}
+        label="Select Assets folders"
+        radius={0}
       />
 
       <TextInput
         value={search}
         onChange={(e) => setSearch(e.currentTarget.value)}
-        label="Results"
-        placeholder="Search"
-        variant="unstyled"
-        classNames={{
-          input: 'input'
-        }}
+        placeholder="Search for textures names or paths..."
+        label="Search"
+        radius={0}
       />
 
-      <Group>
-        {data[activePage - 1]?.map((filePath) => (
-          <Stack
-            key={filePath}
-            className="textureGroup"
-            p="md"
-            w="calc((100% - (5 * var(--mantine-spacing-md))) / 6)"
-            mah="191.69px"
-          >
-            <Group mx="auto">
-              <MenuHolder filePath={filePath} resolution="x16" />
-              <MenuHolder filePath={filePath} resolution="x32" />
-            </Group>
-            <label className="label mantine-InputWrapper-label mantine-MultiSelect-label">
-              {filePath.split('/').pop()?.replace('.png', '')}
-            </label>
-          </Stack>
-        ))}
-      </Group>
+      <Text size="xs" c="dimmed" mt={-15} ml={2}>
+        Showing {displayedTextures.length} results
+      </Text>
 
       <Pagination
         mx="auto"
-        total={data.length}
+        total={splittedTextures.length}
         value={activePage}
         onChange={setActivePage}
         classNames={{
@@ -116,6 +146,38 @@ export default function Home() {
         }}
       />
 
+      <Group gap="md">
+        {splittedTextures[activePage - 1]?.map((filepath) => (
+          <Card 
+            w={`calc((100% - (${cardsPerRow - 1} * var(--mantine-spacing-md))) / ${cardsPerRow})`} 
+            ref={containerRef}
+            radius={0}
+            withBorder
+            key={filepath}
+            p="xs"
+          >
+            <Stack gap="xs">
+              <Group gap="md" wrap="nowrap" w="100%" justify="center">
+                <MenuHolder filePath={filepath} resolution="x16" openModal={(data) => handleModalOpen(data)} />
+                <MenuHolder filePath={filepath} resolution="x32" openModal={(data) => handleModalOpen(data)} />
+              </Group>
+              <Text w="100%" ta="center">
+                {filepath.split('/').pop()?.replace('.png', '')}
+              </Text>
+            </Stack>
+          </Card>
+        ))}
+      </Group>
+
+      <Pagination
+        mx="auto"
+        total={splittedTextures.length}
+        value={activePage}
+        onChange={setActivePage}
+        classNames={{
+          control: 'bordered'
+        }}
+      />
     </Stack>
   );
 }

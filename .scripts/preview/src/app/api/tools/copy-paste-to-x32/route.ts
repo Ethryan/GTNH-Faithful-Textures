@@ -1,14 +1,21 @@
-import { copyFileSync, existsSync, mkdirSync } from "fs";
-import { resolve, sep } from "path";
+import { copyFileSync, existsSync, mkdirSync, readFileSync } from "fs";
+import { join, sep } from "path";
 
 export async function POST(req: Request) {
+	const configPath = join(process.cwd(), '..', 'config.json');
+	const config = JSON.parse(readFileSync(configPath, "utf-8"));
+	
 	const res = await req.json();
 	const filePath = res.filePath as string;
 
-	const x16fullPath = resolve(process.cwd(), '..', '..', filePath.replace('assets', '.default'));
-	const x32fullPath = resolve(process.cwd(), '..', '..', filePath);
+	const x16fullPath = config.directories.default.replace("$root", config.directories.$root) + filePath.replace("assets", "");
+	const x32fullPath = config.directories.faithful.replace("$root", config.directories.$root) + filePath.replace("assets", "");
 
-	const x32Dir = x32fullPath.split(sep).slice(0, -1).join('/');
+	const x32Dir = x32fullPath.includes(sep) 
+		? x32fullPath.split(sep).slice(0, -1).join('/') 
+		: x32fullPath.split('/').slice(0, -1).join('/')
+		;
+
 	if (!existsSync(x32Dir)) mkdirSync(x32Dir, { recursive: true });
 
 	// copy x16 to x32

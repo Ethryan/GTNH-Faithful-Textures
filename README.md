@@ -18,4 +18,4 @@ By Ethryan and [plenty of other contributors](https://github.com/Ethryan/GTNH-Fa
 	- pack.png
 	- README.md
 
-- If you want to help developing the pack, make sure to clone the repository in your `.minecraft/resourcepacks` directory, scripts will assume that the repository is cloned there.
+- If you want to help developing the pack and use the scripts in the `.scripts` directory, refer to the [README.md](/.scripts/README.md) file in the `.scripts` directory for more information on how to use them.

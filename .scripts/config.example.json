@@ -1,0 +1,11 @@
+{
+	"directories": {
+		"$root": "<path_to_your_.minecraft_parent_directory>/.minecraft/resourcepacks",
+		
+		"client_jar": "<path_to_your_multimc_directory>/MultiMC/libraries/com/mojang/minecraft/1.7.10/minecraft-1.7.10-client.jar",
+		"mods": "$root/../mods",
+		"default": "$root/GTNH Faithful/.default",
+		"faithful": "$root/GTNH Faithful/assets",
+		"resourcepack": "$root/GTNH Faithful"
+	}
+}

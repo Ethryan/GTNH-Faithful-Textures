@@ -1,10 +1,10 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-// Cache the cwd path since it won't change
-const BASE_PATH = process.cwd();
-
 export async function GET(req: Request) {
+  const configPath = join(process.cwd(), '..', 'config.json');
+  const config = JSON.parse(readFileSync(configPath, "utf-8"));
+
 	try {
 		const url = new URL(req.url);
     const filepath = url.searchParams.get("path");
@@ -17,13 +17,9 @@ export async function GET(req: Request) {
       });
     }
 
-    // Determine texture file path
-    const texturePath = join(
-      BASE_PATH,
-      "..",
-      "..",
-      resolution === "x16" ? filepath.replace("assets", ".default") : filepath
-    );
+    const texturePath = resolution === "x16" 
+      ? config.directories.default.replace("$root", config.directories.$root) + filepath.replace("assets", "")
+      : config.directories.faithful.replace("$root", config.directories.$root) + filepath.replace("assets", "");
 
     if (!existsSync(texturePath)) {
       return new Response(JSON.stringify({ error: "Texture not found" }), {

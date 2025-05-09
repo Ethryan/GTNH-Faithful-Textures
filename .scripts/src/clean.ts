@@ -51,8 +51,7 @@ export async function clean() {
 			}
 
 			else {
-				const filepath = fullPath.replace(RESOURCE_PACK_DIRECTORY, '').slice(1).replaceAll('\\', '/');
-
+				const filepath = `assets${fullPath.split('assets')[1].replaceAll('\\', '/')}`;
 				if (!existingPaths.has(filepath)) {
 					if (
 						!skippedPaths.has(filepath) || 

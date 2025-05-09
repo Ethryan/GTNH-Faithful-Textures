@@ -51,6 +51,7 @@ jobs:
       - name: Run scripts
         run: |
           cd ./.scripts
+          mv config.example.json config.json
           npm run cleanup
           npm run update ${{ github.event.inputs.version || github.event.pull_request.head.ref }}
           npm run zip

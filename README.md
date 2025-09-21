@@ -8,6 +8,8 @@ By Ethryan and [plenty of other contributors](https://github.com/Ethryan/GTNH-Fa
 
 ### Credits:
 
+- Credits to the [FaithfulPack Team] (https://faithfulpack.net/), since I imported the majority of all vanilla textures for Et Futurum Requiem from there. Specifically from their [Classic Faithful Branch] (https://github.com/ClassicFaithful/Classic-32x-Java/)
+
 - Credits to Magnetanide for her excellent block textures from the pack [Stellar Fusion](https://web.archive.org/web/20230430014009/https://www.gtnewhorizons.com/forum/m/36844562/viewthread/32547244-stellar-fusion-gregtech-32x32-v034) - Archive Link
 
 ### Information:

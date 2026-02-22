@@ -6,6 +6,9 @@ on:
       version:
         description: 'Version number that follows SemVer (x.y.z), do not include the "v" prefix (e.g., 1.0.0)'
         required: true
+      pack_game_version:
+        description: 'Optional GTNH game version(s) for updater metadata, SemVer list separated by ";" (e.g., 2.7.4;2.8.0)'
+        required: false
   pull_request:
     types:
       - closed
@@ -17,6 +20,9 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions: write-all
+    env:
+      VERSION: ${{ github.event.inputs.version || github.event.pull_request.head.ref }}
+      PACK_GAME_VERSION: ${{ github.event.inputs.pack_game_version || github.event.inputs.version || github.event.pull_request.head.ref }}
 
     steps:
       - name: Checkout
@@ -38,6 +44,14 @@ jobs:
             exit 1
           fi
 
+      - name: Check pack_game_version follows SemVer list
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.pack_game_version != ''
+        run: |
+          if [[ ! "${{ github.event.inputs.pack_game_version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([[:space:]]*;[[:space:]]*[0-9]+\.[0-9]+\.[0-9]+)*$ ]]; then
+            echo "pack_game_version must be a SemVer list separated by ';' (e.g., 2.7.4;2.8.0)."
+            exit 1
+          fi
+
       - name: Install NodeJS
         uses: actions/setup-node@v4
         with:
@@ -53,8 +67,18 @@ jobs:
           cd ./.scripts
           mv config.example.json config.json
           npm run cleanup
-          npm run update ${{ github.event.inputs.version || github.event.pull_request.head.ref }}
+          npm run update ${{ env.VERSION }} "${{ env.PACK_GAME_VERSION }}"
           npm run zip
+
+      - name: Create GTNH updater metadata
+        run: |
+          cat > gtnh-pack-update.json <<EOF
+          {
+            "schema": 1,
+            "pack_version": "${{ env.VERSION }}",
+            "pack_game_version": "${{ env.PACK_GAME_VERSION }}"
+          }
+          EOF
 
       - name: Create tag
         uses: actions/github-script@v7
@@ -63,7 +87,7 @@ jobs:
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: 'refs/tags/v${{ github.event.inputs.version || github.event.pull_request.head.ref }}',
+              ref: 'refs/tags/v${{ env.VERSION }}',
               sha: context.sha
             });
 
@@ -74,16 +98,24 @@ jobs:
             const release = await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: `v${{ github.event.inputs.version || github.event.pull_request.head.ref }}`,
-              name: `v${{ github.event.inputs.version || github.event.pull_request.head.ref }}`,
+              tag_name: `v${{ env.VERSION }}`,
+              name: `v${{ env.VERSION }}`,
               body: '',
               target_commitish: context.sha
             });
 
-            github.rest.repos.uploadReleaseAsset({
+            await github.rest.repos.uploadReleaseAsset({
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: release.data.id,
-              name: 'GTNH-Faithful-x32 v${{ github.event.inputs.version || github.event.pull_request.head.ref }}.zip',
+              name: 'GTNH-Faithful-x32 v${{ env.VERSION }}.zip',
               data: require('fs').readFileSync('./pack.zip')
+            });
+
+            await github.rest.repos.uploadReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: release.data.id,
+              name: 'gtnh-pack-update.json',
+              data: require('fs').readFileSync('./gtnh-pack-update.json')
             });

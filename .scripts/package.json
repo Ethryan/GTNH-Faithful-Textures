@@ -16,7 +16,7 @@
     "@types/archiver": "^6.0.3",
     "@types/node": "^22.14.0",
     "@types/unzipper": "^0.10.11",
-    "archiver": "^7.0.1",
+    "archiver": "^8.0.0",
     "consola": "^3.4.2",
     "sharp": "^0.34.0",
     "typescript": "^5.8.3",
